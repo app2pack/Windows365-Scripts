@@ -2,11 +2,10 @@
 function Get-UsernameAndDomain {
 $User = tasklist /v /FI "IMAGENAME eq explorer.exe" /FO list | find "User Name:"
 $User = $User.Substring(14)
-$User = $User.Split("\")
-$User = $User[1]
-write-host $User
-
-$domain = $userDetails[0]
+# Extract the username and domain from the whoami command
+   $userDetails = $User.Split("\")
+   $username = $userDetails[1]
+   $domain = $userDetails[0]
    Write-Host "Username: $username"
    Write-Host "Domain: $domain"
    return @($username, $domain)
