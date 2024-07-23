@@ -1,3 +1,5 @@
+# Function to get the username and domain of the currently logged-in user
+function Get-UsernameAndDomain {
 $User = tasklist /v /FI "IMAGENAME eq explorer.exe" /FO list | find "User Name:"
 $User = $User.Substring(14)
 $User = $User.Split("\")
