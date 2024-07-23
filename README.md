@@ -3,3 +3,5 @@ W365-AdminPrompt.ps1- This powershell script can be used inside windows 365 clou
 W365-Block clipboard redirection-from cloud pc to local pc.ps1 - This script will block the copy paste clipboard redirection from session host i.e w365 cloud pc to the local pc. 
 
 w365-Block bidirectional clipboard redirection.ps1 - This script can be used to test the blocking of bidirectional copy paste from both cloud pc to laptop and vice versa.
+
+W365-AdminPrompt-SystemContext.ps1 - This script can be used to fetch the username who has currently logged in even through system context. If you want go get the username as system context through Intune portal then make use of this script.
