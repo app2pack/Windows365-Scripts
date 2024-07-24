@@ -32,6 +32,6 @@ $problematicCloudPCs = Get-CloudPCWithIssues
 
 # Display the results
 $problematicCloudPCs | Format-Table -Property DisplayName, UserPrincipalName, HealthStatus, Id
-
+$problematicCloudPCs | export-csv -Path c:\temp\unhealthy.csv -NoTypeInformation -force
 # Disconnect from Microsoft Graph
 Disconnect-MgGraph
