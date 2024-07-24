@@ -9,7 +9,7 @@ Prerequisites
 Explanation:
 
 1. Install and Import Microsoft.Graph Module: The script ensures the `Microsoft.Graph` module is installed and imported.
-2. Authenticate to Microsoft Graph: You need to authenticate to Microsoft Graph with appropriate scopes. This script uses `DeviceManagementManagedDevices.Read.All` scope.
+2. Authenticate to Microsoft Graph: You need to authenticate to Microsoft Graph with appropriate scopes. This script uses `DeviceManagementManagedDevices.Read.All` and DeviceManagementVirtualEndpoint.Read.All scopes.
 3. Get Devices with Issues: The `Get-CloudPCWithIssues` function fetches all managed devices and filters those that are Windows 365 Cloud PCs with the specified health statuses.
 4. Display the Results: The script formats and displays the results.
 5. Disconnect: Finally, the script disconnects from the Microsoft Graph session.
