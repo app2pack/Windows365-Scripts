@@ -1,12 +1,12 @@
 To retrieve Windows 365 Cloud PCs with connection issues and specific health statuses from Microsoft Intune, you can use the Microsoft Graph API.
 PowerShell can be used to interact with the Graph API to fetch the relevant device details.
 
-Prerequisites
+**Prerequisites**
 1. You need the `Microsoft.Graph` PowerShell module.
 2. You must have appropriate permissions to access Intune data via the Microsoft Graph API.
 3. You need to authenticate with the Microsoft Graph API.
 
-Explanation:
+**Explanation:**
 
 1. Install and Import Microsoft.Graph Module: The script ensures the `Microsoft.Graph` module is installed and imported.
 2. Authenticate to Microsoft Graph: You need to authenticate to Microsoft Graph with appropriate scopes. This script uses `DeviceManagementManagedDevices.Read.All` and DeviceManagementVirtualEndpoint.Read.All scopes.
