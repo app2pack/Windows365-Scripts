@@ -9,3 +9,8 @@
 5. **Create W365-Block clipboard redirection-from local pc to cloud pc.ps1** - This script can be used to manually test the registry method to allow copy paste from cloud pc to laptop but block copy paste clipboard redirection from laptop to cloud pc. This script will create registry entries that can be manually tested instead of Intune or GPO method.
 
 6. **W365-Check_LoggedinUser_IsAdmin_systemcontext.ps1** - Script to check whether the logged in user in w365 is a member of administrator group or not. 
+
+7. W365-Clipboard-Rediect-Prompt_Cloudpc2client.ps1 - Script to prompt the user to enter the value based on the options and set the registry value to allow from windows 365 cloud pc to base device.
+
+
+Run these scripts in PowerShell with administrative privileges to ensure it can modify the registry.
