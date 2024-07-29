@@ -11,11 +11,11 @@ try {
     }
 
     # Set the registry values
-    Set-ItemProperty -Path $regPath -Name "CSClipLevel" -Value 1 -Type DWord -ErrorAction Stop
-    Write-Host "Set CSClipLevel to 1"
+    Set-ItemProperty -Path $regPath -Name "CSClipLevel" -Value 0 -Type DWord -ErrorAction Stop
+    Write-Host "Set CSClipLevel to 0"
 
-    Set-ItemProperty -Path $regPath -Name "SCClipLevel" -Value 1 -Type DWord -ErrorAction Stop
-    Write-Host "Set SCClipLevel to 1"
+    Set-ItemProperty -Path $regPath -Name "SCClipLevel" -Value 0 -Type DWord -ErrorAction Stop
+    Write-Host "Set SCClipLevel to 0"
 
     Write-Host "Registry keys have been set successfully."
 } catch {
