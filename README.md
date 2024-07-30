@@ -10,7 +10,10 @@
 
 6. **W365-Check_LoggedinUser_IsAdmin_systemcontext.ps1** - Script to check whether the logged in user in w365 is a member of administrator group or not. 
 
-7. W365-Clipboard-Rediect-Prompt_Cloudpc2client.ps1 - Script to prompt the user to enter the value based on the options and set the registry value to allow from windows 365 cloud pc to base device.
+7. W365-Clipboard-Rediect-Prompt_Cloudpc2client.ps1 - Script to prompt the user to enter the value based on the options and set the registry value to allow copy paste from windows 365 cloud pc to base device.
+
+8. W365-Clipboard-Rediect-Prompt_Client2Cloudpc.ps1 - Script to prompt the user to enter the value based on the options and set the registry value to allow copy paste from base device to windows 365 cloud pc.
 
 
+   
 Run these scripts in PowerShell with administrative privileges to ensure it can modify the registry.
