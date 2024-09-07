@@ -14,6 +14,9 @@
 
 8. **W365-Clipboard-Rediect-Prompt_Client2Cloudpc.ps1** - Script to prompt the user to enter the value based on the options and set the registry value to allow copy paste from base device to windows 365 cloud pc.
 
-9. W365-ShowHidden-Restart.ps1 - Displays the restart button if its disabled or hidden inside a windows 365 cloud pc. 
-   
+9. **W365-ShowHidden-Restart.ps1** - Displays the restart button if its disabled or hidden inside a windows 365 cloud pc.
+
+10. **W365-EnableScreenCaptureProtection.ps1** - Script to enable screen capture protection in the session host.
+
+    
 Run these scripts in PowerShell with administrative privileges to ensure it can modify the registry.
