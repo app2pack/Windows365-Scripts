@@ -1,11 +1,25 @@
-#Script to list reason for reboot required
-$regpath = 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager'
-$regpath1 = 'HKLM:\SYSTEM\ControlSet001\Control\Session Manager'
-$regpath2 = 'HKLM:\SYSTEM\ControlSet002\Control\Session Manager'
-$regpath3 = 'HKLM:\SYSTEM\ControlSet001\Control\BackupRestore\KeysNotToRestore'
+# Script to list reason for reboot required
+$regpaths = @(
+    'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager',
+    'HKLM:\SYSTEM\ControlSet001\Control\Session Manager',
+    'HKLM:\SYSTEM\ControlSet002\Control\Session Manager',
+    'HKLM:\SYSTEM\ControlSet001\Control\BackupRestore\KeysNotToRestore'
+)
 $name = 'PendingFileRenameOperations'
-#Test-Path $regpath 
-Get-ItemProperty -Path $regpath |select-object -ExpandProperty $name -ErrorAction SilentlyContinue
-Get-ItemProperty -Path $regpath1 |select-object -ExpandProperty $name -ErrorAction SilentlyContinue
-Get-ItemProperty -Path $regpath2 |select-object -ExpandProperty $name -ErrorAction SilentlyContinue
-Get-ItemProperty -Path $regpath3 |select-object -ExpandProperty $name -ErrorAction SilentlyContinue
+$pendingRenames = @()
+
+# Loop through each registry path and check for the property
+foreach ($regpath in $regpaths) {
+    $result = Get-ItemProperty -Path $regpath | Select-Object -ExpandProperty $name -ErrorAction SilentlyContinue
+    if ($result) {
+        $pendingRenames += $result
+    }
+}
+
+# Check if any results were found
+if ($pendingRenames.Count -eq 0) {
+    Write-Host "No reboot required"
+} else {
+    Write-Host "Pending reboot required for the following operations:"
+    $pendingRenames | ForEach-Object { Write-Host $_ }
+}
