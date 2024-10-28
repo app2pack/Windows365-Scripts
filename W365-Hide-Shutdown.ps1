@@ -1,5 +1,5 @@
 # Define the path to the registry subkey
-$subkeyPath = "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Start\Hideshutdown"
+$subkeyPath = "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Start\HideShutDown"
 
 # Define the name of the DWORD value to check and set
 $dwordName = "value"
