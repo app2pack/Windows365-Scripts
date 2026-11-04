@@ -1,0 +1,50 @@
+<#
+.SYNOPSIS
+  Creates a Windows 365 Cloud PC configuration with "Enable local admin" set.
+  No groups are assigned, so it applies to no one until you assign it in Intune.
+.EXAMPLE
+  .\New-W365LocalAdminPolicy.ps1 -Action Enable
+  .\New-W365LocalAdminPolicy.ps1 -Action Disable -PolicyName "W365-CPC-LocalAdmin-Off"
+#>
+param(
+    [Parameter(Mandatory)][ValidateSet("Enable", "Disable")][string]$Action,
+    [string]$PolicyName = "W365-CPC-LocalAdmin",
+    [string]$TenantId
+)
+
+$ErrorActionPreference = "Stop"
+
+# One-time: Install-Module Microsoft.Graph.Authentication -Scope CurrentUser
+Import-Module Microsoft.Graph.Authentication
+
+$connectArgs = @{ Scopes = "CloudPC.ReadWrite.All" }
+if ($TenantId) { $connectArgs.TenantId = $TenantId }
+Connect-MgGraph @connectArgs | Out-Null
+
+$uri = "https://graph.microsoft.com/beta/deviceManagement/virtualEndpoint/settingProfiles"
+
+# Stop if a policy with this name already exists
+$listFilter = [uri]::EscapeDataString("templateId in ('W365.CloudPCConfiguration')")
+$existing = (Invoke-MgGraphRequest -Method GET -OutputType PSObject -Uri "$uri`?`$filter=$listFilter").value |
+    Where-Object { $_.displayName -eq $PolicyName }
+if ($existing) { throw "A policy named '$PolicyName' already exists." }
+
+$body = @{
+    displayName     = $PolicyName
+    description     = "Local admin ($Action) - created by script, not yet assigned"
+    profileType     = "template"
+    templateId      = "W365.CloudPCConfiguration"
+    settings        = @(
+        @{
+            "@odata.type"       = "#microsoft.graph.cloudPcBooleanSetting"
+            dataType            = "boolean"
+            settingDefinitionId = "W365.CloudPCConfiguration.LocalAdmin.IsEnabled"
+            platform            = "all"
+            isEnabled           = ($Action -eq "Enable")
+        }
+    )
+    roleScopeTagIds = @("0")
+} | ConvertTo-Json -Depth 10
+
+Invoke-MgGraphRequest -Method POST -Uri $uri -Body $body -ContentType "application/json" | Out-Null
+Write-Host "Created '$PolicyName' ($Action). Assign groups in Intune: Devices > Cloud PC Settings." -ForegroundColor Green
