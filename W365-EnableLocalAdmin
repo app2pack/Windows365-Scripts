@@ -1,0 +1,72 @@
+<#
+.SYNOPSIS
+  Enable or disable "Enable local admin" in a Windows 365 Cloud PC configuration.
+.EXAMPLE
+  .\Set-W365LocalAdmin.ps1 -Action Enable  -GroupName "W365-LocalAdmins"
+  .\Set-W365LocalAdmin.ps1 -Action Disable -GroupName "W365-LocalAdmins"
+#>
+param(
+    [Parameter(Mandatory)][ValidateSet("Enable", "Disable")][string]$Action,
+    [Parameter(Mandatory)][string]$GroupName,
+    [string]$PolicyName = "W365-CPC-LocalAdmin",
+    [string]$TenantId
+)
+
+$ErrorActionPreference = "Stop"
+
+# One-time: Install-Module Microsoft.Graph.Authentication -Scope CurrentUser
+Import-Module Microsoft.Graph.Authentication
+
+$connectArgs = @{ Scopes = "CloudPC.ReadWrite.All", "Group.Read.All" }
+if ($TenantId) { $connectArgs.TenantId = $TenantId }
+Connect-MgGraph @connectArgs | Out-Null
+
+$base = "https://graph.microsoft.com/beta/deviceManagement/virtualEndpoint/settingProfiles"
+
+# 1. Find the group (must be a security group)
+$filter = [uri]::EscapeDataString("displayName eq '$GroupName'")
+$group = (Invoke-MgGraphRequest -Method GET -OutputType PSObject `
+    -Uri "https://graph.microsoft.com/v1.0/groups?`$filter=$filter&`$select=id,displayName,securityEnabled").value |
+    Select-Object -First 1
+if (-not $group)                 { throw "Group '$GroupName' not found." }
+if (-not $group.securityEnabled) { throw "Group '$GroupName' is not a security group." }
+
+# 2. Build the setting. Enable = true, Disable = false.
+$isEnabled = ($Action -eq "Enable")
+$settings = @(
+    @{
+        "@odata.type"       = "#microsoft.graph.cloudPcBooleanSetting"
+        dataType            = "boolean"
+        settingDefinitionId = "W365.CloudPCConfiguration.LocalAdmin.IsEnabled"
+        platform            = "all"
+        isEnabled           = $isEnabled
+    }
+)
+
+# 3. Does a policy with this name already exist?
+$listFilter = [uri]::EscapeDataString("templateId in ('W365.CloudPCConfiguration')")
+$existing = (Invoke-MgGraphRequest -Method GET -OutputType PSObject -Uri "$base`?`$filter=$listFilter").value |
+    Where-Object { $_.displayName -eq $PolicyName } | Select-Object -First 1
+
+if ($existing) {
+    # Update the existing policy
+    $body = @{ settings = $settings } | ConvertTo-Json -Depth 10
+    Invoke-MgGraphRequest -Method PATCH -Uri "$base/$($existing.id)" -Body $body -ContentType "application/json"
+    Write-Host "Updated '$PolicyName': local admin = $isEnabled" -ForegroundColor Green
+}
+else {
+    # Create a new policy and assign it to the group
+    $body = @{
+        displayName     = $PolicyName
+        description     = "Local admin ($Action) for $GroupName"
+        profileType     = "template"
+        templateId      = "W365.CloudPCConfiguration"
+        settings        = $settings
+        assignments     = @(@{ groupId = $group.id; assignType = "group" })
+        roleScopeTagIds = @("0")
+    } | ConvertTo-Json -Depth 10
+    Invoke-MgGraphRequest -Method POST -Uri $base -Body $body -ContentType "application/json" | Out-Null
+    Write-Host "Created '$PolicyName': local admin = $isEnabled, assigned to '$GroupName'" -ForegroundColor Green
+}
+
+Write-Host "Users must sign out and sign back in on the Cloud PC to see the change." -ForegroundColor Yellow
